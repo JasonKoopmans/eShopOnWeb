@@ -29,6 +29,13 @@ jobs:
     - name: Build with dotnet
       run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release
 
+      # EndToEndTests launch headless Chromium through Playwright; the runner has
+      # no browser, so every E2E test failed with "Executable doesn't exist".
+      # The browser version comes from the Microsoft.Playwright package the build
+      # restored, so install it with that package's own script.
+    - name: Install Playwright browsers
+      run: pwsh tests/EndToEndTests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+
       # See https://josh-ops.com/posts/github-code-coverage/
       # Add coverlet.collector nuget package to test project - 'dotnet add <TestProject.cspoj> package coverlet
     - name: Test with dotnet
